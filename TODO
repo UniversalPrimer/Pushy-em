@@ -1,0 +1,83 @@
+
+
+--------------------
+Test results
+--------------------
+ 
+  Firefox 3.0 and 3.6:
+    Working 100% with xhr_streaming transport
+
+  IE 6, 7 and 8:
+    Working 100% with html_file transport
+
+  Chrome 4.0:
+    Mostly working.
+    Weirdness on auto-reconnect:
+      It keeps trying to reconnect for some reason.
+      When I finally let it connect, it had three connections going!
+
+  Chrome 5.0:
+    Untested
+
+  Safari 3.0:
+    Untested
+
+  Opera 9 to 10.10:
+    100% working except onunload is only triggered on navigate away
+    this is because of limitations in Opera
+
+  Opera >10.10 to 10.60
+    Not working with sse due to weird bug, but falls back to long polling and works fine.
+    
+  Opera 10.7 (still in beta)
+    Working with sse_new transport.
+
+
+--------------------
+TODO and bugs
+--------------------
+
+Add support for sending messages from JS client. 
+  Use Ajax.Request (even longpoll uses that)
+
+Add support for APE-style *.pushy.uprimer.org and make sure all transports work. We'll have to set document.domain. See notes in html_file.js for more info.
+
+Test that channel names can be anything
+
+Better error handling!
+  Right now errors are caught, but nothing is done except to display an error message. The only error conditions that are handled are disconnects with auto-reconnect and max tries before it gives up.
+
+Port the simple join/leave channel, send/receive message JS code from APE to Pushy.
+
+Update Emcee to work with this new library
+
+Protect from duplicate events:
+  Opera bug in at least 9.52 sends all events again after a while if the server shuts down. This could be as simple as having the event sequence counter.
+  -- Hmm I'm pretty sure I already did this, but I'm going to go check in the code to make 100% sure (Juul)
+
+implement WebSockets transport
+
+Bug:
+  ping based disconnect detection (such as in sse) waits _a lot_ longer than non ping based detection (such as in xhr_streaming). this should be fixed.
+
+------------------------------
+
+Opera links:
+
+New SSE:
+  http://my.opera.com/core/blog/eventsource
+  http://tc.labs.opera.com/apis/EventSource/
+
+Old SSE:
+  http://my.opera.com/WebApplications/blog/show.dml/438711
+
+
+New name suggestions:
+    transporter
+    pushy (chosen)
+    sisypush
+  dns has been created:
+    pushy.uprimer.org --> 130.225.68.203
+    *.pushy.uprimer.org --> 130.225.68.203
+    pushyl.uprimer.org --> 127.0.0.1
+    *.pushyl.uprimer.org --> 127.0.0.1

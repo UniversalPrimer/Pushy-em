@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+require 'rubygems'
+require 'choice'
+require 'lib/pushy/app'
+
+Choice.options do
+  header ''
+  header 'Available options:'
+
+  option :host do
+    short '-h'
+    long '--host=HOST'
+    desc 'The hostname or ip of the host to bind to (default 0.0.0.0)'
+    default '0.0.0.0'
+  end
+
+  option :port do
+    short '-p'
+    long '--port=PORT'
+    desc 'The port to listen on (default 4000)'
+    cast Integer
+    default 4000
+  end
+end
+
+require 'lib/pushy'
+
+
+
+
+EM::run do
+  host = Choice.choices[:host]
+  port = Choice.choices[:port]
+
+  app = Pushy::App.new
+
+  begin
+    EM::start_server host, port, PushyServer, app
+    puts "Started Pushy on #{host}:#{port}"
+  rescue RuntimeError => e
+    if e.message == 'no acceptor'
+      $stderr.puts "Could not start Pushy. Is something else listening on port #{port}?"
+    end
+    EM::stop_event_loop
+  end
+end
